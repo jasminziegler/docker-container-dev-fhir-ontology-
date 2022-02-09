@@ -1,0 +1,40 @@
+{
+  "name": "fhir-ontology-dev-container",
+  "image": "fhir-ontology-dev-container:latest",
+  "appPort": ["127.0.0.1:3000:3000", "127.0.0.1:6006:6006", "127.0.0.1:8888:8888"],
+  "workspaceFolder": "/home/user/development",
+  "extensions": [
+    "grapecity.gc-excelviewer",
+    "ms-python.python",
+    "ms-python.vscode-pylance"
+  ],
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "python.disableInstallationCheck": true,
+    "terminal.integrated.inheritEnv": false,
+    "python.pythonPath": "/home/user/miniconda/bin/python",
+    "python.languageServer": "Pylance",
+    "python.linting.pylintEnabled": true,
+    "python.linting.pylintPath": "/home/user/miniconda/bin/pylint",
+    "python.linting.enabled": true,
+    "python.formatting.provider": "autopep8",
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.defaultFormatter": "ms-python.python",
+    "jupyter.debugJustMyCode": false
+  },
+  "remoteUser": "user",
+  "remoteEnv": {
+    "TERM_PROGRAM": "vscode"
+  },
+  "runArgs": [
+    //"--gpus=all",
+    "--shm-size=1gb",
+    "-v", "/d/git/fhir-ontology-dev-container/fhir-ontology-generator:/home/user/development/fhir-ontology-generator"
+    // "--privileged" // !!! use this with caution only - e.g. when using smb mounts with mount.cifs
+  ],
+  //"mounts": [
+  //  "source=/mount/this/folder,target=/home/user/development,type=bind,consistency=cached"
+  //]
+}
