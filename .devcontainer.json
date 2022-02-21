@@ -31,7 +31,7 @@
   "runArgs": [
     //"--gpus=all",
     "--shm-size=1gb",
-    "-v", "/d/git/fhir-ontology-dev-container/fhir-ontology-generator:/home/user/development/fhir-ontology-generator"
+    "-v", "/d/git/fhir-ontology-dev-container:/home/user/development/fhir-ontology-dev-container"
     // "--privileged" // !!! use this with caution only - e.g. when using smb mounts with mount.cifs
   ],
   //"mounts": [

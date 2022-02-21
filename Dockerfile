@@ -1,5 +1,8 @@
 FROM ubuntu:21.04
 
+#for surpressing a weird interactive dialogue during installation
+ARG DEBIAN_FRONTEND=noninteractive
+
 # install essential packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-utils \ 
@@ -17,10 +20,12 @@ RUN rm packages-microsoft-prod.deb
 
 RUN apt-get update && apt-get install -y \
     apt-transport-https \
-    dotnet-sdk-6.0
+    dotnet-sdk-3.1 
+    #dotnet-runtime-3.1
 
 #install firely terminal
-ENV PATH="${PATH}:/root/.dotnet/tools"
+#ENV PATH="${PATH}:/root/.dotnet/tools"
+#ENV PATH=/home/${PYTHON_USER}/.dotnet/tools:${PATH}
 RUN dotnet tool install -g firely.terminal
 
 
@@ -43,6 +48,9 @@ ENV PATH=/home/${USER}/miniconda/bin:$PATH
 # ENV PYVERSION=${PYVERSION}
 ENV PYVERSION=3.8.5
 
+# set terminology server fhir api adress
+ENV ONTOLOGY_SERVER_ADDRESS="https://terminology.medic.medfak.uni-koeln.de/fhir"
+
 USER ${USER}
 
 RUN curl -sLo ~/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
@@ -63,8 +71,9 @@ RUN conda install -y \
     setuptools \
     wheel
 
-RUN yes | pip install \
-    testresources
+# extends unittest for managing expensive test resources
+# RUN yes | pip install \
+#     testresources
 
 ########################
 USER root
@@ -86,14 +95,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     #libcairo2-dev \
     #libclang-dev \
     #libffi-dev \
-   # libglu1-mesa-dev \
+    #libglu1-mesa-dev \
     #libgsl-dev \
     #liblzma-dev \ 
     #libmagick++-dev \
     #libmpfr-dev \
     #libopenblas-dev \
     #libopenmpi-dev \
-    #libpq-dev \
+    libpq-dev \
     #libsasl2-dev \
     #libxt-dev \
     #libxml2-dev \
@@ -105,14 +114,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     #software-properties-common \
     tar \
     unzip \
-    wget
+    wget \
+    python3-dev
 RUN apt-get clean && \ 
     apt-get autoclean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN locale-gen en_US.utf8 \
-    && /usr/sbin/update-locale LANG=en_US.UTF-8
-ENV LANG=en_US.UTF-8
+
+#CHANGE THIS TO de_DE 
+# RUN locale-gen en_US.utf8 \
+#     && /usr/sbin/update-locale LANG=en_US.UTF-8
+# ENV LANG=en_US.UTF-8
+RUN locale-gen de_DE \
+    && /usr/sbin/update-locale LANG=de_DE
+ENV LANG=de_DE
 
 
 
@@ -122,6 +137,10 @@ USER ${PYTHON_USER}
 #install requirements.txt
 ADD requirements.txt /home/${PYTHON_USER}/
 RUN yes | pip install -r /home/${PYTHON_USER}/requirements.txt
+
+#install requirements.txt from Lorenz package
+ADD fhir-ontology-generator/requirements.txt /home/${PYTHON_USER}/requirementsLorenz.txt
+RUN yes | pip install -r /home/${PYTHON_USER}/requirementsLorenz.txt
 
 ########################
 # clear caches
@@ -149,6 +168,7 @@ RUN rm -rf /var/lib/apt/lists/* && \
     apt-get clean && apt-get autoclean && apt-get autoremove -y
 
 ########################
+
 WORKDIR /home/${PYTHON_USER}
 
 USER ${PYTHON_USER}
